@@ -1,8 +1,9 @@
 const e = (id) => document.getElementById(id)
 
+var members;
+
 async function loadTable() {
   let teams = JSON.parse(await (await fetch("/api/teams")).text());
-  let members = JSON.parse(await (await fetch("/api/members/list")).text())
 
   teams.forEach((team, i) => {
     teams[i].leader1_name = parseMemberString(team, members, "leader1");
@@ -61,10 +62,47 @@ async function loadTable() {
     }
   });
   table.render(e("tableInHere"))
+
+  table.on('rowClick', (...args) => {
+
+  });
+
+  
 }
 
+function loadMembersInTeamInput() {
+  let selects = [
+    document.getElementById("modal-members"),
+    document.getElementById("modal-leader1"),
+    document.getElementById("modal-leader2"),
+    document.getElementById("modal-leader3"),
+  ]
 
+  members.forEach(member => {
+    selects.forEach(select => {
+      let option = document.createElement("option");
+      option.value = member.id;
+      option.innerText = `${member.first_name} ${member.second_name}`;
+      select.appendChild(option);
+    });
+  });
 
+  $(document).ready(function() {
+    $('#modal-members').multiselect({
+      buttonClass: 'form-control',
+      enableFiltering: true,
+      templates: {
+          button: '<button type="button" class="multiselect dropdown-toggle" data-bs-toggle="dropdown"><span class="multiselect-selected-text"></span></button>',
+      }
+  });
+  });
+}
+
+fetch("/api/members/list").then(response => response.text().then(text => {
+  members = JSON.parse(text);
+  loadTable();
+  loadMembersInTeamInput();
+}));
 
 function parseMemberString(team, members, field) {
   if (team[field]) {
@@ -74,4 +112,4 @@ function parseMemberString(team, members, field) {
   }
 }
 
-loadTable()
+

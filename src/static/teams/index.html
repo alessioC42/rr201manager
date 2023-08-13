@@ -7,6 +7,7 @@
   <link href="/gridjs/theme/mermaid.css" rel="stylesheet">
   <link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet">
   <link href="/bootstrap-icons/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="/bootstrap-multiselect/css/bootstrap-multiselect.min.css">
   <style>
     th {
       min-width: 80px;
@@ -27,7 +28,8 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarNavDropdown">
         <ul class="navbar-nav">
-          <button class="nav-item btn btn-outline-primary" type="button" data-bs-toggle="modal" data-bs-target="#createModal" id="createMemberButton">
+          <button class="nav-item btn btn-outline-primary" type="button" data-bs-toggle="modal"
+            data-bs-target="#createModal" id="createMemberButton">
             neues Team erstellen
           </button>
           <li class="nav-item">
@@ -66,101 +68,61 @@
   <button type="button" data-bs-toggle="modal" data-bs-target="#createModal" id="openModalHidden" hidden>
     neues Team erstellen
   </button>
-<div class="modal modal-xl fade" id="createModal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="createModalLabel">Modal title</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <div class="input-group">
-          <input class="form-control" id="modal-first_name">
-          <span class="input-group-text">Vorname</span>
+  <div class="modal modal-xl fade" id="createModal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="createModalLabel">Modal title</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div class="input-group mt-2">
-          <input class="form-control" id="modal-second_name">
-          <span class="input-group-text">Nachname</span>
+        <div class="modal-body">
+          <div class="input-group">
+            <input class="form-control" id="modal-Teamname" disabled>
+            <span class="input-group-text">Teamname</span>
+          </div>
+          <div class="input-group mt-2">
+            <select class="form-select" id="modal-leader1">
+              <option value="null">-</option>
+            </select>
+            <span class="input-group-text">Leiter A</span>
+          </div>
+          <div class="input-group mt-2">
+            <select class="form-select" id="modal-leader2">
+              <option value="null">-</option>
+            </select>
+            <span class="input-group-text">Leiter B</span>
+          </div>
+          <div class="input-group mt-2">
+            <select class="form-select" id="modal-leader3">
+              <option value="null">-</option>
+            </select>
+            <span class="input-group-text">Leiter C</span>
+          </div>
+          <div class="input-group mt-2">
+            <textarea class="form-control" id="modal-notes"></textarea>
+            <span class="input-group-text">Notizen</span>
+          </div>
+          <div class="input-group mt-2">
+            <select id="modal-members" multiple="multiple" class="mt-3" hidden></select>
+            <span class="input-group-text">Mitglieder</span>
+          </div>
         </div>
-        <div class="input-group mt-2">
-          <select class="form-select" id="modal-gender">
-            <option value="M">Männlich</option>
-            <option value="W">Weiblich</option>
-            <option value="D">Divers</option>
-          </select>
-          <span class="input-group-text">Geschlecht</span>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+            id="modalCloseButton">schließen</button>
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal" id="modalDeleteMember">Team
+            Entfernen</button>
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="modalSaveButton">Team
+            speichern</button>
         </div>
-        <div class="input-group mt-2">
-          <input class="form-control" type="date" id="modal-birthday">
-          <span class="input-group-text">Geburtstag</span>
-        </div>
-        <div class="input-group mt-2">
-          <input class="form-control" type="tel" id="modal-phone">
-          <span class="input-group-text">Tel 1</span>
-        </div>
-        <div class="input-group mt-2">
-          <input class="form-control" type="tel" id="modal-phone2">
-          <span class="input-group-text">Tel 2</span>
-        </div>
-        <div class="input-group mt-2">
-          <input class="form-control" type="email" id="modal-email">
-          <span class="input-group-text">E-Mail</span>
-        </div>
-        <div class="input-group mt-2">
-          <input class="form-control" id="modal-address">
-          <span class="input-group-text">Addresse</span>
-        </div>
-        <div class="input-group mt-2">
-          <select class="form-select" id="modal-family">
-            <option value="create_family"> - Neue mit Nachnamen erstellen</option>
-          </select>
-          <span class="input-group-text">Familie</span>
-        </div>
-        <div class="input-group mt-2">
-          <select class="form-select" id="modal-team">
-            <option value="">kein Team</option>
-          </select>
-          <span class="input-group-text">Team</span>
-        </div>
-        <div class="input-group mt-2">
-          <select class="form-select" id="modal-function_level">
-            <option value="Entdecker">Entdecker</option>
-            <option value="Forscher">Forscher</option>
-            <option value="Kundschafter">Kundschafter</option>
-            <option value="Pfadfinder">Pfadfinder</option>
-            <option value="Pfadranger">Pfadranger</option>
-            <option value="Royalranger">Royalranger</option>
-          </select>
-          <span class="input-group-text">Stufe</span>
-        </div>
-        <div class="input-group mt-2">
-          <select class="form-select" id="modal-active">
-            <option value="1">Ja</option>
-            <option value="0">Nein</option>
-          </select>
-          <span class="input-group-text">Aktiv</span>
-        </div>
-        <div class="input-group mt-2">
-          <select class="form-select" id="modal-debit">
-            <option value="1">Ja</option>
-            <option value="0">Nein</option>
-          </select>
-          <span class="input-group-text">Lastschrift</span>
-        </div>
-
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="modalCloseButton">schließen</button>
-        <button type="button" class="btn btn-danger" data-bs-dismiss="modal" id="modalDeleteMember">Mitglied Entfernen</button>
-        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="modalSaveButton">Mitglied speichern</button>
       </div>
     </div>
   </div>
-</div>
-  
+
 
   <script src="/jquery/jquery.min.js"></script>
   <script src="/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="/bootstrap-multiselect/js/bootstrap-multiselect.min.js"></script>
   <script src="/gridjs/gridjs.umd.js"></script>
   <script src="script.js"></script>
 </body>

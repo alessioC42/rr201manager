@@ -12,6 +12,7 @@
     "better-sqlite3": "^8.5.0",
     "bootstrap": "^5.3.1",
     "bootstrap-icons": "^1.10.5",
+    "bootstrap-multiselect": "^1.1.0",
     "express": "^4.18.2",
     "gridjs": "^6.0.6",
     "jquery": "^3.7.0"
