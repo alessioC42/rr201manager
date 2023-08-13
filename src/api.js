@@ -6,6 +6,7 @@ const db = betterSQLite3(__dirname + "/database.db", { "fileMustExist": true, "v
 
 const dbQuerys = {
     getAllMembers:          db.prepare("SELECT * FROM members;"),
+    getAllMemberNames:      db.prepare("SELECT id, first_name, second_name FROM members;"),
     getSingeMemberByID:     db.prepare("SELECT * FROM members WHERE id=?;"),
     addSingleMember:        db.prepare("INSERT INTO members (first_name, second_name, gender, birthday, address, email, phone, phone2, function_level, team, family, active, debit) VALUES ($first_name, $second_name, $gender, $birthday, $address, $email, $phone, $phone2, $function_level, $team, $family, $active, $debit);"),
     getAllFamilys:          db.prepare("SELECT * FROM familys"),
@@ -35,6 +36,12 @@ api.get("/members", (_req, res) => {
         data[i].age = getAge(row.birthday)
     })
 
+    res.json(data);
+    res.end();
+});
+
+api.get("/members/list", (_req, res) => {
+    let data = dbQuerys.getAllMemberNames.all();
     res.json(data);
     res.end();
 });
