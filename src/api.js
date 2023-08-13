@@ -2,28 +2,28 @@ const express = require("express");
 const betterSQLite3 = require("better-sqlite3");
 
 const api = express.Router();
-const db = betterSQLite3(__dirname + "/database.db", { "fileMustExist": true, "verbose": console.log});
+const db = betterSQLite3(__dirname + "/database.db", { "fileMustExist": true, "verbose": console.log });
 
 const dbQuerys = {
-    getAllMembers:          db.prepare("SELECT * FROM members;"),
-    getAllMemberNames:      db.prepare("SELECT id, first_name, second_name FROM members;"),
-    getSingeMemberByID:     db.prepare("SELECT * FROM members WHERE id=?;"),
-    addSingleMember:        db.prepare("INSERT INTO members (first_name, second_name, gender, birthday, address, email, phone, phone2, function_level, team, family, active, debit) VALUES ($first_name, $second_name, $gender, $birthday, $address, $email, $phone, $phone2, $function_level, $team, $family, $active, $debit);"),
-    getAllFamilys:          db.prepare("SELECT * FROM familys"),
-    getAllFamilyNames:      db.prepare("SELECT familyname FROM familys"),
-    getAllFamilyMembers:    db.prepare("SELECT id, first_name, second_name FROM members WHERE id=?;"),
-    deleteMember:           db.prepare("DELETE FROM members WHERE id=?;"),
-    getSingeFamilyByName:   db.prepare("SELECT * FROM familys WHERE familyname=?;"),
-    addSingleFamily:        db.prepare("INSERT INTO familys (familyname, parent_first_name, parent_second_name, parent_gender, parent_address, parent_email, parent_phone, parent_phone2, generated) VALUES ($familyname, $parent_first_name, $parent_second_name, $parent_gender, $parent_address, $parent_email, $parent_phone, $parent_phone2, $generated);"),
-    addGeneratedFamily:     db.prepare("INSERT INTO familys (familyname, generated) VALUES (?, 1);"),
-    deleteFamily:           db.prepare("DELETE FROM familys WHERE familyname=?;"),
-    getAllTeams:            db.prepare("SELECT * FROM teams;"),
-    getAllTeamNames:        db.prepare("SELECT teamname FROM teams;"),
-    getSingleTeam:          db.prepare("SELECT * FROM teams WHERE teamname=?;"),
-    getAllTeamMembers:      db.prepare("SELECT * FROM members WHERE team=?;"),
-    addSingleTeam:          db.prepare("INSERT INTO teams (teamname, leader1, leader2, leader3, notes) VALUES ($teamname, $leader1, $leader2, $leader3, $notes)"),
-    removeTeamConnections:  db.prepare("UPDATE members SET team='' WHERE team=?;"),
-    deleteTeam:             db.prepare("DELETE FROM teams WHERE teamname=?;")
+    getAllMembers: db.prepare("SELECT * FROM members;"),
+    getAllMemberNames: db.prepare("SELECT id, first_name, second_name FROM members;"),
+    getSingeMemberByID: db.prepare("SELECT * FROM members WHERE id=?;"),
+    addSingleMember: db.prepare("INSERT INTO members (first_name, second_name, gender, birthday, address, email, phone, phone2, function_level, team, family, active, debit) VALUES ($first_name, $second_name, $gender, $birthday, $address, $email, $phone, $phone2, $function_level, $team, $family, $active, $debit);"),
+    getAllFamilys: db.prepare("SELECT * FROM familys"),
+    getAllFamilyNames: db.prepare("SELECT familyname FROM familys"),
+    getAllFamilyMembers: db.prepare("SELECT id, first_name, second_name FROM members WHERE id=?;"),
+    deleteMember: db.prepare("DELETE FROM members WHERE id=?;"),
+    getSingeFamilyByName: db.prepare("SELECT * FROM familys WHERE familyname=?;"),
+    addSingleFamily: db.prepare("INSERT INTO familys (familyname, parent_first_name, parent_second_name, parent_gender, parent_address, parent_email, parent_phone, parent_phone2, generated) VALUES ($familyname, $parent_first_name, $parent_second_name, $parent_gender, $parent_address, $parent_email, $parent_phone, $parent_phone2, $generated);"),
+    addGeneratedFamily: db.prepare("INSERT INTO familys (familyname, generated) VALUES (?, 1);"),
+    deleteFamily: db.prepare("DELETE FROM familys WHERE familyname=?;"),
+    getAllTeams: db.prepare("SELECT teams.*, COUNT(members.team) AS member_count FROM teams LEFT JOIN members ON teams.teamname = members.team GROUP BY teams.teamname;"),
+    getAllTeamNames: db.prepare("SELECT teamname FROM teams;"),
+    getSingleTeam: db.prepare("SELECT * FROM teams WHERE teamname=?;"),
+    getAllTeamMembers: db.prepare("SELECT * FROM members WHERE team=?;"),
+    addSingleTeam: db.prepare("INSERT INTO teams (teamname, leader1, leader2, leader3, notes) VALUES ($teamname, $leader1, $leader2, $leader3, $notes)"),
+    removeTeamConnections: db.prepare("UPDATE members SET team='' WHERE team=?;"),
+    deleteTeam: db.prepare("DELETE FROM teams WHERE teamname=?;")
 }
 
 /**
@@ -66,7 +66,7 @@ api.post("/member/create", (req, res) => {
             data.team == null;
         }
 
-        if (!data.family || data.family== "") {
+        if (!data.family || data.family == "") {
             res.status(500).end();
         } else {
             dbQuerys.addSingleMember.run(data);
@@ -176,7 +176,7 @@ api.post("/family/update", (req, res) => {
         Object.keys(data).forEach((column, _index) => {
             db.prepare(`UPDATE family SET ${column}=${escapeSQL(data[column])} WHERE familyname=${familyname};`).run();
         });
-        
+
         res.status(200).end();
     } catch (err) {
         console.log(err);
@@ -190,13 +190,13 @@ api.delete("/family/delete", (req, res) => {
 
         let members = dbQuerys.getAllFamilyMembers.all(familyname);
 
-        if (members.length >=1) {
+        if (members.length >= 1) {
             res.status(400).send(members).end();
         } else {
             dbQuerys.deleteFamily.run(familyname);
             res.status(200).end();
         }
-        
+
     } catch (err) {
         console.log(err);
         res.status(500).end();
@@ -257,7 +257,7 @@ api.post("/team/update", (req, res) => {
         Object.keys(data).forEach((column, _index) => {
             db.prepare(`UPDATE team SET ${column}=${escapeSQL(data[column])} WHERE teamname=${teamname};`).run();
         });
-        
+
         res.status(200).end();
     } catch (err) {
         console.log(err);
@@ -282,7 +282,7 @@ api.delete("/team/delete", (req, res) => {
  *  FUNCTIONS
  */
 function escapeSQL(value) {
-    if (value == null) {return "NULL"}
+    if (value == null) { return "NULL" }
     return "'" + String(value).replace(/'/g, "''") + "'";
 }
 
