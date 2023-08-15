@@ -20,7 +20,7 @@ const dbQuerys = {
     getAllTeams: db.prepare("SELECT teams.*, COUNT(members.team) AS member_count FROM teams LEFT JOIN members ON teams.teamname = members.team GROUP BY teams.teamname;"),
     getAllTeamNames: db.prepare("SELECT teamname FROM teams;"),
     getSingleTeam: db.prepare("SELECT * FROM teams WHERE teamname=?;"),
-    getAllTeamMembers: db.prepare("SELECT * FROM members WHERE team=?;"),
+    getAllTeamMembers: db.prepare("SELECT id FROM members WHERE team=?;"),
     addSingleTeam: db.prepare("INSERT INTO teams (teamname, leader1, leader2, leader3, notes) VALUES ($teamname, $leader1, $leader2, $leader3, $notes)"),
     removeTeamConnections: db.prepare("UPDATE members SET team='' WHERE team=?;"),
     deleteTeam: db.prepare("DELETE FROM teams WHERE teamname=?;")
@@ -208,6 +208,16 @@ api.delete("/family/delete", (req, res) => {
  */
 api.get("/teams", (_req, res) => {
     let data = dbQuerys.getAllTeams.all();
+
+    data.forEach((row, i) => {
+        let members = dbQuerys.getAllTeamMembers.all(row.teamname);
+        let membersToAppend = [];
+        members.forEach((row) => {
+            membersToAppend.push(row.id);
+        });
+        data[i].members = membersToAppend;
+    })
+
     res.json(data).status(200).end();
 });
 
@@ -234,7 +244,11 @@ api.get("/team", (req, res) => {
 api.get("/team/members", (req, res) => {
     let teamname = req.query.teamname;
     let data = dbQuerys.getAllTeamMembers.all(teamname);
-    res.json(data).status(200).end();
+    let returndata = [];
+    data.forEach((row) => {
+        returndata.push(row.id);
+    });
+    res.json(returndata).status(200).end();
 });
 
 api.post("/team/create", (req, res) => {

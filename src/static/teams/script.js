@@ -1,46 +1,46 @@
 const e = (id) => document.getElementById(id)
 
+var teams;
 var members;
+var table;
 
 async function loadTable() {
-  let teams = JSON.parse(await (await fetch("/api/teams")).text());
+  teams = JSON.parse(await (await fetch("/api/teams")).text());
 
   teams.forEach((team, i) => {
     teams[i].leader1_name = parseMemberString(team, members, "leader1");
     teams[i].leader2_name = parseMemberString(team, members, "leader2");
     teams[i].leader3_name = parseMemberString(team, members, "leader3");
   });
-  console.log(teams);
 
-  const table = new gridjs.Grid({
+  table = new gridjs.Grid({
     fixedHeader: true,
     search: true,
     fixedHeader: true,
     height: '80vh',
     width: "98%",
     columns: [
-      { name: '_ID', id: 'id', hidden: true },
       { name: '_leader1', id: 'leader1', hidden: true },
       { name: '_leader2', id: 'leader2', hidden: true },
       { name: '_leader3', id: 'leader3', hidden: true },
       { name: 'Team', id: 'teamname' },
-      { 
-        name: 'Leiter A', 
+      {
+        name: 'Leiter A',
         id: 'leader1_name',
+        formatter: (field, row) => gridjs.html(`<a href="/members/?show=${row.cells[0].data}">${field}</a>`)
+      },
+      {
+        name: 'Leiter B',
+        id: 'leader2_name',
         formatter: (field, row) => gridjs.html(`<a href="/members/?show=${row.cells[1].data}">${field}</a>`)
       },
-      { 
-        name: 'Leiter B', 
-        id: 'leader2_name',
+      {
+        name: 'Leiter C',
+        id: 'leader3_name',
         formatter: (field, row) => gridjs.html(`<a href="/members/?show=${row.cells[2].data}">${field}</a>`)
       },
-      { 
-        name: 'Leiter C', 
-        id: 'leader3_name',
-        formatter: (field, row) => gridjs.html(`<a href="/members/?show=${row.cells[3].data}">${field}</a>`)
-      },
       { name: "Mitglieder", id: "member_count" },
-      { name: "Notizen", id: "notes"}
+      { name: "Notizen", id: "notes" }
     ],
     data: teams,
     style: {
@@ -63,16 +63,13 @@ async function loadTable() {
   });
   table.render(e("tableInHere"))
 
-  table.on('rowClick', (...args) => {
+  table.on('rowClick', onRowClick);
 
-  });
 
-  
 }
 
 function loadMembersInTeamInput() {
   let selects = [
-    document.getElementById("modal-members"),
     document.getElementById("modal-leader1"),
     document.getElementById("modal-leader2"),
     document.getElementById("modal-leader3"),
@@ -85,16 +82,6 @@ function loadMembersInTeamInput() {
       option.innerText = `${member.first_name} ${member.second_name}`;
       select.appendChild(option);
     });
-  });
-
-  $(document).ready(function() {
-    $('#modal-members').multiselect({
-      buttonClass: 'form-control',
-      enableFiltering: true,
-      templates: {
-          button: '<button type="button" class="multiselect dropdown-toggle" data-bs-toggle="dropdown"><span class="multiselect-selected-text"></span></button>',
-      }
-  });
   });
 }
 
@@ -112,4 +99,30 @@ function parseMemberString(team, members, field) {
   }
 }
 
+function onRowClick(...args) {
+  let teamname = (args[1]._cells[3].data)
+  
+};
 
+
+e("createTeamButton").onclick = onNewTeamClick;
+function onNewTeamClick() {
+  e("modalDeleteTeam").hidden = true;
+  e("modal-teamname").removeAttribute("disabled");
+
+  e("modal-teamname").value = "";
+  e("modal-leader1").value = "null";
+  e("modal-leader2").value = "null";
+  e("modal-leader3").value = "null";
+  e("modal-notes").value = "";
+
+  e("modalSaveButton").onclick = () => {
+    fetch("/api/team/create?data=" + encodeURIComponent(JSON.stringify({
+      teamname: e("modal-teamname").value,
+      leader1: e("modal-leader1").value,
+      leader2: e("modal-leader2").value,
+      leader3: e("modal-leader3").value,
+      notes: e("modal-notes").value
+    })), { method: "POST" });
+  }
+}

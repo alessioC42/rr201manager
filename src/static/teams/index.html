@@ -7,7 +7,6 @@
   <link href="/gridjs/theme/mermaid.css" rel="stylesheet">
   <link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet">
   <link href="/bootstrap-icons/font/bootstrap-icons.min.css" rel="stylesheet">
-  <link href="/bootstrap-multiselect/css/bootstrap-multiselect.min.css">
   <style>
     th {
       min-width: 80px;
@@ -29,7 +28,7 @@
       <div class="collapse navbar-collapse" id="navbarNavDropdown">
         <ul class="navbar-nav">
           <button class="nav-item btn btn-outline-primary" type="button" data-bs-toggle="modal"
-            data-bs-target="#createModal" id="createMemberButton">
+            data-bs-target="#createModal" id="createTeamButton">
             neues Team erstellen
           </button>
           <li class="nav-item">
@@ -77,7 +76,7 @@
         </div>
         <div class="modal-body">
           <div class="input-group">
-            <input class="form-control" id="modal-Teamname" disabled>
+            <input class="form-control" id="modal-teamname" disabled>
             <span class="input-group-text">Teamname</span>
           </div>
           <div class="input-group mt-2">
@@ -102,15 +101,11 @@
             <textarea class="form-control" id="modal-notes"></textarea>
             <span class="input-group-text">Notizen</span>
           </div>
-          <div class="input-group mt-2">
-            <select id="modal-members" multiple="multiple" class="mt-3" hidden></select>
-            <span class="input-group-text">Mitglieder</span>
-          </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
             id="modalCloseButton">schließen</button>
-          <button type="button" class="btn btn-danger" data-bs-dismiss="modal" id="modalDeleteMember">Team
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal" id="modalDeleteTeam">Team
             Entfernen</button>
           <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="modalSaveButton">Team
             speichern</button>
@@ -122,7 +117,6 @@
 
   <script src="/jquery/jquery.min.js"></script>
   <script src="/bootstrap/js/bootstrap.bundle.min.js"></script>
-  <script src="/bootstrap-multiselect/js/bootstrap-multiselect.min.js"></script>
   <script src="/gridjs/gridjs.umd.js"></script>
   <script src="script.js"></script>
 </body>
