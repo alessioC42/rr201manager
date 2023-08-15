@@ -1,16 +1,20 @@
 const e = (id) => document.getElementById(id)
 
 var teams;
+var teams_dict = {}
 var members;
+var members_dict = {}
 var table;
 
 async function loadTable() {
   teams = JSON.parse(await (await fetch("/api/teams")).text());
 
   teams.forEach((team, i) => {
-    teams[i].leader1_name = parseMemberString(team, members, "leader1");
-    teams[i].leader2_name = parseMemberString(team, members, "leader2");
-    teams[i].leader3_name = parseMemberString(team, members, "leader3");
+    teams[i].leader1_name = parseMemberString(team, members_dict, "leader1");
+    teams[i].leader2_name = parseMemberString(team, members_dict, "leader2");
+    teams[i].leader3_name = parseMemberString(team, members_dict, "leader3");
+
+    teams_dict[team.teamname] = team;
   });
 
   table = new gridjs.Grid({
@@ -76,6 +80,7 @@ function loadMembersInTeamInput() {
   ]
 
   members.forEach(member => {
+    members_dict[member.id] = member;
     selects.forEach(select => {
       let option = document.createElement("option");
       option.value = member.id;
@@ -91,17 +96,26 @@ fetch("/api/members/list").then(response => response.text().then(text => {
   loadMembersInTeamInput();
 }));
 
-function parseMemberString(team, members, field) {
+function parseMemberString(team, members_dict, field) {
   if (team[field]) {
-    return `${members[team[field]].first_name} ${members[team[field]].second_name}`;
+    return `${members_dict[team[field]].first_name} ${members_dict[team[field]].second_name}`;
   } else {
     return null
   }
 }
 
 function onRowClick(...args) {
-  let teamname = (args[1]._cells[3].data)
-  
+  e("modalDeleteTeam").hidden = false;
+  e("modal-teamname").setAttribute("disabled", "true");
+
+  let team = teams_dict[args[1]._cells[3].data];
+
+  e("modal-teamname").value = team.teamname
+  e("modal-leader1").value = team.leader1;
+  e("modal-leader2").value = team.leader2;
+  e("modal-leader3").value = team.leader3;
+  e("modal-notes").value = team.notes ;
+  e("openModalHidden").click();
 };
 
 
