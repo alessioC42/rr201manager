@@ -22,7 +22,7 @@ const dbQuerys = {
     getSingleTeam: db.prepare("SELECT * FROM teams WHERE teamname=?;"),
     getAllTeamMembers: db.prepare("SELECT id FROM members WHERE team=?;"),
     addSingleTeam: db.prepare("INSERT INTO teams (teamname, leader1, leader2, leader3, notes) VALUES ($teamname, $leader1, $leader2, $leader3, $notes)"),
-    removeTeamConnections: db.prepare("UPDATE members SET team='' WHERE team=?;"),
+    removeTeamConnections: db.prepare("UPDATE members SET team=NULL WHERE team=?;"),
     deleteTeam: db.prepare("DELETE FROM teams WHERE teamname=?;")
 }
 

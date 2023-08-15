@@ -63,7 +63,8 @@ fetch("/api/members").then(response => {
 
       e("modalDeleteMember").onclick = () => {
         fetch("/api/member/delete?id="+d.id, {method: "DELETE"}).then(res => {
-          e("modalCloseButton").click()
+          e("modalCloseButton").click();
+          location.reload();
         })
       }
 

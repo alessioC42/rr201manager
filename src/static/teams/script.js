@@ -116,6 +116,16 @@ function onRowClick(...args) {
   e("modal-leader3").value = team.leader3;
   e("modal-notes").value = team.notes ;
   e("openModalHidden").click();
+
+  e("modalDeleteTeam").onclick = () => {
+    fetch("/api/team/delete?teamname="+decodeURIComponent(team.teamname), {method:"DELETE"}).then(response => {
+      if(response.status == 200) {
+        location.reload();
+      } else {
+        alert(response.statusText);
+      }
+    })
+  }
 };
 
 
