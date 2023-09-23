@@ -32,7 +32,7 @@ fetch("/api/members").then(response => {
         { name: "_Alter", id: "age", hidden: true },
         {
           name: "Alter",
-          formatter: (_, row) => gridjs.html(`<b>${row.cells[6].data}</b><br>(${row.cells[5].data})`)
+          formatter: (_, row) => gridjs.html(`<b>${row.cells[6].data}</b><br>(${(new Date(row.cells[5].data)).toLocaleDateString("de-DE")})`)
         },
         { name: "_Addresse", id: "address", hidden: true },
         { name: "Tel 1", id: "phone", formatter: (tel) => gridjs.html(`<a href="tel:${tel}">${tel}</a>`) },
@@ -135,6 +135,8 @@ fetch("/api/members").then(response => {
     };
 
     e("createMemberButton"). onclick = () => {
+      e("createModalLabel").innerHTML = `Neues Mitglied erstellen`;
+
       e("modal-first_name").value = "";
       e("modal-second_name").value = "";
       e("modal-gender").value = "";
@@ -153,7 +155,7 @@ fetch("/api/members").then(response => {
 
       e("modalSaveButton").onclick = () => {
         let team;
-        if (e("modal-team").value === "") { team = null } else { team = e("modal-team").value }
+        team = e("modal-team").value === "" ? null : e("modal-team").value;
 
         let data = {
           first_name: e("modal-first_name").value,
