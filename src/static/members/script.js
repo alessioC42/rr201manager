@@ -1,13 +1,20 @@
-const e = (id) => document.getElementById(id)
+const e = (id) => document.getElementById(id);
+
+// Initialize an empty object to store member data.
+const memberData = {};
 
 fetch("/api/members").then(response => {
   response.text().then(text => {
-    var memberData = JSON.parse(text);
+    const rawData = JSON.parse(text);
+
+    // Populate the memberData object with member data.
+    rawData.forEach(member => {
+      memberData[member.id] = member;
+    });
 
     const table = new gridjs.Grid({
       sort: true,
       resizable: true,
-      fixedHeader: true,
       search: true,
       fixedHeader: true,
       height: '80vh',
@@ -36,7 +43,7 @@ fetch("/api/members").then(response => {
         { name: "Familie", id: "family" },
         { name: "Aktiv", id: "active", formatter: (bin) => ["Nein", "Ja"][Number(bin)] },
         { name: "Lastschrift", id: "debit", formatter: (bin) => ["Nein", "Ja"][Number(bin)] }],
-      data: memberData,
+      data: Object.values(memberData), // Use object values to convert the memberData object to an array
       style: {
         th: {
           'text-align': 'center',
@@ -54,41 +61,43 @@ fetch("/api/members").then(response => {
           'text-align': 'center'
         }
       }
-    })
-    table.render(e("tableInHere"))
+    });
+
+    table.render(e("tableInHere"));
 
     const onRowClick = (...args) => {
       //edit member
-      let d = memberData[args[1]._cells[0].data - 1];
+      const memberId = args[1]._cells[0].data;
+      const member = memberData[memberId];
 
       e("modalDeleteMember").onclick = () => {
-        fetch("/api/member/delete?id="+d.id, {method: "DELETE"}).then(res => {
+        fetch("/api/member/delete?id="+member.id, {method: "DELETE"}).then(_res => {
           e("modalCloseButton").click();
           location.reload();
         })
       }
 
-      e("modal-first_name").value = d.first_name;
-      e("modal-second_name").value = d.second_name;
-      e("modal-gender").value = d.gender;
-      e("modal-birthday").value = d.birthday;
-      e("modal-phone").value = d.phone;
-      e("modal-phone2").value = d.phone2;
-      e("modal-email").value = d.email;
-      e("modal-address").value = d.address;
-      e("modal-family").value = d.family;
-      e("modal-team").value = d.team;
-      e("modal-function_level").value = d.function_level;
-      e("modal-active").value = String(d.active);
-      e("modal-debit").value = String(d.debit);
+      e("modal-first_name").value = member.first_name;
+      e("modal-second_name").value = member.second_name;
+      e("modal-gender").value = member.gender;
+      e("modal-birthday").value = member.birthday;
+      e("modal-phone").value = member.phone;
+      e("modal-phone2").value = member.phone2;
+      e("modal-email").value = member.email;
+      e("modal-address").value = member.address;
+      e("modal-family").value = member.family;
+      e("modal-team").value = member.team;
+      e("modal-function_level").value = member.function_level;
+      e("modal-active").value = String(member.active);
+      e("modal-debit").value = String(member.debit);
 
       e("modalDeleteMember").hidden = false;
       e("openModalHidden").click();
-      e("createModalLabel").innerHTML = `Mitglied bearbeiten <i>(ID: ${d.id})</i>`;
+      e("createModalLabel").innerHTML = `Mitglied bearbeiten <i>(ID: ${member.id})</i>`;
 
       e("modalSaveButton").onclick = () => {
         let team;
-        if (e("modal-team").value == "") { team = null } else { team = e("modal-team").value }
+        if (e("modal-team").value === "") { team = null } else { team = e("modal-team").value }
 
         let data = {
           first_name: e("modal-first_name").value,
@@ -106,14 +115,20 @@ fetch("/api/members").then(response => {
           debit: e("modal-debit").value,
         }
 
-        fetch(`/api/member/update?id=${d.id}&data=` + decodeURIComponent(JSON.stringify(data)), {
+        fetch(`/api/member/update?id=${member.id}&data=` + decodeURIComponent(JSON.stringify(data)), {
           method: "POST"
         }).then(response => {
-          if (response.status == 200) {
-            memberData[d.id - 1] = data;
-            memberData[d.id - 1].age = getAge(data.birthday);
-            memberData[d.id - 1].id = d.id
-            table.forceRender()
+          if (response.status === 200) {
+            console.log('Before update:', memberData);
+            memberData[memberId] = data;
+            memberData[memberId].id = memberId;
+            memberData[memberId].age = getAge(data.birthday);
+            table.updateConfig({
+              data: Object.values(memberData)
+            })
+            table.forceRender();
+            console.log('After update:', memberData);
+
           }
         });
       }
@@ -138,7 +153,7 @@ fetch("/api/members").then(response => {
 
       e("modalSaveButton").onclick = () => {
         let team;
-        if (e("modal-team").value == "") { team = null } else { team = e("modal-team").value }
+        if (e("modal-team").value === "") { team = null } else { team = e("modal-team").value }
 
         let data = {
           first_name: e("modal-first_name").value,
@@ -157,17 +172,18 @@ fetch("/api/members").then(response => {
         }
 
         const createMember = (data) => {
-          fetch("/api/member/create?data="+decodeURIComponent(JSON.stringify(data)), {method: "POST"});
-          location.reload()
+          fetch("/api/member/create?data="+decodeURIComponent(JSON.stringify(data)), {method: "POST"}).then(()=>{
+            location.reload();
+          })
         }
 
-        if (data.family == "create_family") {
+        if (data.family === "create_family") {
           fetch("/api/family/create/generate?familyname="+decodeURIComponent(data.second_name), {method: "POST"}).then(response => {
-            if (response.status == 200) {
+            if (response.status === 200) {
               data.family = data.second_name;
               createMember(data);
             } else {
-              console.error("error while createing family")
+              console.error("error while creating family")
             }
           })
         } else {
@@ -176,8 +192,6 @@ fetch("/api/members").then(response => {
 
       }
     }
-
-
 
     table.on('rowClick', (...args) => onRowClick(...args))
   });
@@ -197,16 +211,15 @@ function loadOptionsFromURL(url, selectID) {
 }
 
 function getAge(dateString) {
-  var today = new Date();
-  var birthDate = new Date(dateString);
-  var age = today.getFullYear() - birthDate.getFullYear();
-  var m = today.getMonth() - birthDate.getMonth();
+  let today = new Date();
+  let birthDate = new Date(dateString);
+  let age = today.getFullYear() - birthDate.getFullYear();
+  let m = today.getMonth() - birthDate.getMonth();
   if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
     age--;
   }
   return age;
 }
-
 
 loadOptionsFromURL("/api/familys/list", "modal-family");
 loadOptionsFromURL("/api/teams/list", "modal-team");
