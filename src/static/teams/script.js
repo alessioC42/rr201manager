@@ -20,7 +20,6 @@ async function loadTable() {
   table = new gridjs.Grid({
     fixedHeader: true,
     search: true,
-    fixedHeader: true,
     height: '80vh',
     width: "98%",
     columns: [
@@ -108,7 +107,9 @@ function onRowClick(...args) {
   e("modalDeleteTeam").hidden = false;
   e("modal-teamname").setAttribute("disabled", "true");
 
-  let team = teams_dict[args[1]._cells[3].data];
+
+  let teamName = args[1]._cells[3].data;
+  let team = teams_dict[teamName];
 
   e("modal-teamname").value = team.teamname
   e("modal-leader1").value = team.leader1;
@@ -119,34 +120,46 @@ function onRowClick(...args) {
 
   e("modalDeleteTeam").onclick = () => {
     fetch("/api/team/delete?teamname="+decodeURIComponent(team.teamname), {method:"DELETE"}).then(response => {
-      if(response.status == 200) {
+      if(response.status === 200) {
         location.reload();
       } else {
         alert(response.statusText);
       }
     })
   }
-};
+
+  e("modalSaveButton").onclick = () => {
+    fetch("/api/team/update?teamname="+encodeURIComponent(teamName)+"&data=" + encodeURIComponent(JSON.stringify({
+      leader1: e("modal-leader1").value === "null"? null : e("modal-leader1").value,
+      leader2: e("modal-leader2").value === "null"? null : e("modal-leader2").value,
+      leader3: e("modal-leader3").value === "null"? null : e("modal-leader3").value,
+      notes: e("modal-notes").value
+    })), { method: "POST" }).then(_response => {
+      location.reload();
+    })
+  }
+}
 
 
-e("createTeamButton").onclick = onNewTeamClick;
-function onNewTeamClick() {
+e("createTeamButton").onclick = () => {
   e("modalDeleteTeam").hidden = true;
   e("modal-teamname").removeAttribute("disabled");
 
   e("modal-teamname").value = "";
-  e("modal-leader1").value = "null";
-  e("modal-leader2").value = "null";
-  e("modal-leader3").value = "null";
+  e("modal-leader1").value = null;
+  e("modal-leader2").value = null;
+  e("modal-leader3").value = null;
   e("modal-notes").value = "";
 
   e("modalSaveButton").onclick = () => {
     fetch("/api/team/create?data=" + encodeURIComponent(JSON.stringify({
       teamname: e("modal-teamname").value,
-      leader1: e("modal-leader1").value,
-      leader2: e("modal-leader2").value,
-      leader3: e("modal-leader3").value,
+      leader1: e("modal-leader1").value === "null"? null : e("modal-leader1").value,
+      leader2: e("modal-leader2").value === "null"? null : e("modal-leader2").value,
+      leader3: e("modal-leader3").value === "null"? null : e("modal-leader3").value,
       notes: e("modal-notes").value
-    })), { method: "POST" });
+    })), { method: "POST" }).then(_response => {
+      location.reload();
+    })
   }
 }

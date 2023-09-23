@@ -62,11 +62,11 @@ api.post("/member/create", (req, res) => {
     try {
         let data = JSON.parse(req.query.data);
 
-        if (data.team == "") {
-            data.team == null;
+        if (data.team === "") {
+            data.team = null;
         }
 
-        if (!data.family || data.family == "") {
+        if (!data.family || data.family === "") {
             res.status(500).end();
         } else {
             dbQueries.addSingleMember.run(data);
@@ -176,7 +176,7 @@ api.post("/family/update", (req, res) => {
         let familyname = Number(req.query.familyname);
 
         Object.keys(data).forEach((column, _index) => {
-            db.prepare(`UPDATE family SET ${column}=${escapeSQL(data[column])} WHERE familyname=${familyname};`).run();
+            db.prepare(`UPDATE familys SET ${column}=${escapeSQL(data[column])} WHERE familyname=${familyname};`).run();
         });
 
         res.status(200).end();
@@ -266,12 +266,11 @@ api.post("/team/create", (req, res) => {
 
 api.post("/team/update", (req, res) => {
     try {
-        console.log(req.query);
         let data = JSON.parse(req.query.data);
-        let teamName = Number(req.query.teamname);
+        let teamName = req.query.teamname;
 
         Object.keys(data).forEach((column, _index) => {
-            db.prepare(`UPDATE team SET ${column}=${escapeSQL(data[column])} WHERE teamname=${teamName};`).run();
+            db.prepare(`UPDATE teams SET ${column}=${escapeSQL(data[column])} WHERE teamname=${escapeSQL(teamName)};`).run();
         });
 
         res.status(200).end();
@@ -303,10 +302,10 @@ function escapeSQL(value) {
 }
 
 function getAge(dateString) {
-    var today = new Date();
-    var birthDate = new Date(dateString);
-    var age = today.getFullYear() - birthDate.getFullYear();
-    var m = today.getMonth() - birthDate.getMonth();
+    let today = new Date();
+    let birthDate = new Date(dateString);
+    let age = today.getFullYear() - birthDate.getFullYear();
+    let m = today.getMonth() - birthDate.getMonth();
     if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
         age--;
     }
