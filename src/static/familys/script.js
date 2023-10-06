@@ -1,10 +1,10 @@
 const e = (id) => document.getElementById(id)
 
-let teams;
-let teams_dict = {}
-let members;
-let members_dict = {}
-let table;
+var teams;
+var teams_dict = {}
+var members;
+var members_dict = {}
+var table;
 
 async function loadTable() {
   teams = JSON.parse(await (await fetch("/api/teams")).text());

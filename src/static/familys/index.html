@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>rrmanager</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="/gridjs/theme/mermaid.css" rel="stylesheet">
+  <link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/bootstrap-icons/font/bootstrap-icons.min.css" rel="stylesheet">
+  <style>
+    th {
+      min-width: 80px;
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="navbar navbar-expand-lg bg-body-tertiary bg-dark" data-bs-theme="dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/">
+        <img src="/icon.svg" alt="Bootstrap" width="40" height="30">
+        RR201-Mitgliederverwaltung
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
+        aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNavDropdown">
+        <ul class="navbar-nav">
+          <button class="nav-item btn btn-outline-primary" type="button" data-bs-toggle="modal"
+            data-bs-target="#createModal" id="createTeamButton">
+            neue Familie erstellen
+          </button>
+          <li class="nav-item">
+            <a class="nav-link" href="/members">Mitglieder</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/teams">Teams</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="/familys">Familien</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/annualfee">Jahresbeitrag</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/events">Veranstaltungen/Camps</a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Tools
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="/email">E-Mail Verteiler</a></li>
+              <li><a class="dropdown-item" href="/status">Server Status</a></li>
+              <li><a class="dropdown-item" href="/sqllog">SQL logs</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <br>
+  <div class="gridjs-container text-center" id="tableInHere"></div>
+
+  <button type="button" data-bs-toggle="modal" data-bs-target="#createModal" id="openModalHidden" hidden>
+    neue Familie erstellen
+  </button>
+  <div class="modal modal-xl fade" id="createModal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="createModalLabel">Modal title</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="input-group">
+            <input class="form-control" id="modal-teamname" disabled>
+            <span class="input-group-text">Teamname</span>
+          </div>
+          <div class="input-group mt-2">
+            <select class="form-select" id="modal-leader1">
+              <option value="null">-</option>
+            </select>
+            <span class="input-group-text">Leiter A</span>
+          </div>
+          <div class="input-group mt-2">
+            <select class="form-select" id="modal-leader2">
+              <option value="null">-</option>
+            </select>
+            <span class="input-group-text">Leiter B</span>
+          </div>
+          <div class="input-group mt-2">
+            <select class="form-select" id="modal-leader3">
+              <option value="null">-</option>
+            </select>
+            <span class="input-group-text">Leiter C</span>
+          </div>
+          <div class="input-group mt-2">
+            <textarea class="form-control" id="modal-notes"></textarea>
+            <span class="input-group-text">Notizen</span>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+            id="modalCloseButton">schließen</button>
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal" id="modalDeleteTeam">Team
+            Entfernen</button>
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="modalSaveButton">Team
+            speichern</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <script src="/jquery/jquery.min.js"></script>
+  <script src="/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="/gridjs/gridjs.umd.js"></script>
+  <script src="script.js"></script>
+</body>
+
+</html>
